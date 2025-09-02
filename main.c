@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <windows.h>
+#include <time.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "libs/stb_image_write.h"
 
 void ConvertToPng(int width, int height, unsigned char *pixels) {
-    stbi_write_png("screen.png", width, height, 4, pixels, width * 4);
+    char buffer[255];
+    time_t t = time(NULL);
+    struct tm date = *localtime(&t);
+    snprintf(buffer, sizeof(buffer), "screenshot-%d-%02d-%02d %02d_%02d_%02d.png",
+        date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, date.tm_hour, date.tm_min, date.tm_sec);
+    stbi_write_png(buffer, width, height, 4, pixels, width * 4);
 }
 
 void RotateBitmap(unsigned char *pixels, int width, int height) {
@@ -31,7 +37,7 @@ void SwapChannels(unsigned char *pixels, int width, int height) {
     }
 }
 
-void SaveBitmap(HBITMAP hBitmap, HDC hDC, LPCSTR filename) {
+void SaveBitmap(HBITMAP hBitmap, HDC hDC) {
     BITMAP bmp;
     GetObject(hBitmap, sizeof(BITMAP), &bmp);
 
@@ -62,8 +68,7 @@ void SaveBitmap(HBITMAP hBitmap, HDC hDC, LPCSTR filename) {
 }
 
 
-
-void TakeScreenshot(const char* filename) {
+__declspec(dllexport) void TakeScreenshot() {
     HDC hScreenDC = GetDC(NULL);
     HDC hMemoryDC = CreateCompatibleDC(hScreenDC);
 
@@ -75,21 +80,9 @@ void TakeScreenshot(const char* filename) {
 
     BitBlt(hMemoryDC, 0, 0, width, height, hScreenDC, 0, 0, SRCCOPY);
 
-    SaveBitmap(hBitmap, hMemoryDC, filename);
+    SaveBitmap(hBitmap, hMemoryDC);
 
     DeleteObject(hBitmap);
     DeleteDC(hMemoryDC);
     ReleaseDC(NULL, hScreenDC);
-}
-
-
-[[noreturn]] int main() {
-    printf("Press 'PrtSc' to take a screenshot.\n");
-    while (true) {
-        if (GetAsyncKeyState(VK_SNAPSHOT)) {
-            TakeScreenshot("screenshot.bmp");
-            printf("Screenshot is taken successfully.\n");
-        }
-        Sleep(800);
-    }
 }
