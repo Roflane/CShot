@@ -4,7 +4,7 @@
 #include <time.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "libs/stb_image_write.h"
+#include "stb_image_write.h"
 
 void ConvertToPng(int width, int height, unsigned char *pixels) {
     char buffer[255];
