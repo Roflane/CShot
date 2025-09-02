@@ -20,7 +20,7 @@ void RotateBitmap(unsigned char *pixels, int width, int height) {
     for (int y = 0; y < height / 2; y++) {
         BYTE* top = pixels + y * rowSize;
         BYTE* bottom = pixels + (height - 1 - y) * rowSize;
-        for(int x = 0; x < rowSize; x++) {
+        for (int x = 0; x < rowSize; x++) {
             BYTE temp = top[x];
             top[x] = bottom[x];
             bottom[x] = temp;
@@ -29,7 +29,7 @@ void RotateBitmap(unsigned char *pixels, int width, int height) {
 }
 
 void SwapChannels(unsigned char *pixels, int width, int height) {
-    for(int i = 0; i < width * height; i++) {
+    for (int i = 0; i < width * height; i++) {
         BYTE* p = pixels + i * 4;
         BYTE temp = p[0];
         p[0] = p[2];
